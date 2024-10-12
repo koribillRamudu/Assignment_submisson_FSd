@@ -1,0 +1,232 @@
+<h1>Mountains</h1>
+<div id="mountains"></div>
+<script>
+  const MOUNTAINS = [
+    { name: "Kilimanjaro", height: 5895, place: "Tanzania" },
+    { name: "Everest", height: 8848, place: "Nepal" },
+    { name: "Mount Fuji", height: 3776, place: "Japan" },
+    { name: "Vaalserberg", height: 323, place: "Netherlands" },
+    { name: "Denali", height: 6168, place: "United States" },
+    { name: "Popocatepetl", height: 5465, place: "Mexico" },
+    { name: "Mont Blanc", height: 4808, place: "Italy/France" }
+  ];
+
+  function buildTable(data) {
+    let table = document.createElement("table");
+
+    // Create the header row
+    let headerRow = document.createElement("tr");
+    for (let key in data[0]) {
+      let th = document.createElement("th");
+      th.textContent = key;
+      headerRow.appendChild(th);
+    }
+    table.appendChild(headerRow);
+
+    // Create the data rows
+    for (let mountain of data) {
+      let row = document.createElement("tr");
+      for (let key in mountain) {
+        let td = document.createElement("td");
+        td.textContent = mountain[key];
+
+        // Right-align cells with numbers
+        if (typeof mountain[key] === "number") {
+          td.style.textAlign = "right";
+        }
+
+        row.appendChild(td);
+      }
+      table.appendChild(row);
+    }
+
+    return table;
+  }
+
+  document.getElementById("mountains").appendChild(buildTable(MOUNTAINS));
+</script>
+
+
+<!-- //ans 2// -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elements by Tag Name</title>
+</head>
+<body>
+
+    <h1>Heading with a <span>span</span> element.</h1>
+    <p>A paragraph with <span>one</span>, <span>two</span> spans.</p>
+
+    <script>
+        function byTagName(node, tagName) {
+            let result = [];
+
+            // Recursive function to traverse the DOM tree
+            function traverse(currentNode) {
+                // Check if the current node is an element node
+                if (currentNode.nodeType === Node.ELEMENT_NODE) {
+                    // Compare the tag name (to lower case)
+                    if (currentNode.nodeName.toLowerCase() === tagName.toLowerCase()) {
+                        result.push(currentNode);
+                    }
+
+                    // Iterate over the child nodes
+                    for (let child of currentNode.children) {
+                        traverse(child);
+                    }
+                }
+            }
+
+            // Start traversing from the given node
+            traverse(node);
+            return result;
+        }
+
+        // Testing the function
+        console.log(byTagName(document.body, "h1").length); // → 1
+        console.log(byTagName(document.body, "span").length); // → 3
+        let para = document.querySelector("p");
+        console.log(byTagName(para, "span").length); // → 2
+    </script>
+
+</body>
+</html>
+
+
+<!-- Ans3 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Trail</title>
+    <style>
+        .trail {
+            position: absolute;
+            height: 6px;
+            width: 6px;
+            border-radius: 3px;
+            background: teal;
+        }
+        body {
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    // Create an array to hold the trail elements
+    const trailElements = [];
+    const trailLength = 10; // Fixed number of trail elements
+
+    // Create trail div elements and add them to the body
+    for (let i = 0; i < trailLength; i++) {
+        const trail = document.createElement("div");
+        trail.classList.add("trail");
+        document.body.appendChild(trail);
+        trailElements.push(trail);
+    }
+
+    let currentIndex = 0;
+
+    // Mousemove event handler
+    window.addEventListener("mousemove", (event) => {
+        // Update the position of the current trail element
+        const trail = trailElements[currentIndex];
+        trail.style.left = (event.pageX - 3) + "px";  // Adjusting to center the trail element
+        trail.style.top = (event.pageY - 3) + "px";
+
+        // Move to the next trail element in the array
+        currentIndex = (currentIndex + 1) % trailLength;  // Cycle through the trail elements
+    });
+</script>
+
+</body>
+</html>
+
+
+<!-- Ans4 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabbed Interface</title>
+  <style>
+    button.active {
+      background-color: #4CAF50; /* Green background for active button */
+      color: white;
+    }
+
+    button {
+      margin-right: 5px;
+    }
+
+    tab-panel > div {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<tab-panel>
+  <div data-tabname="one">Tab one content</div>
+  <div data-tabname="two">Tab two content</div>
+  <div data-tabname="three">Tab three content</div>
+</tab-panel>
+
+<script>
+function asTabs(node) {
+  // Create a container for the buttons
+  const buttonsContainer = document.createElement("div");
+  
+  // Get all the child elements (tabs content) of the node
+  const tabs = Array.from(node.children);
+
+  // Function to show the selected tab content and hide the rest
+  function selectTab(selectedTab) {
+    tabs.forEach((tab, index) => {
+      if (tab === selectedTab) {
+        tab.style.display = "";  // Show the selected tab
+        buttonsContainer.children[index].classList.add("active");  // Style active button
+      } else {
+        tab.style.display = "none";  // Hide the rest
+        buttonsContainer.children[index].classList.remove("active");
+      }
+    });
+  }
+
+  // Create a button for each tab content
+  tabs.forEach(tab => {
+    const button = document.createElement("button");
+    button.textContent = tab.getAttribute("data-tabname");  // Use the data-tabname attribute for the button text
+    
+    // Add event listener to select the tab on button click
+    button.addEventListener("click", () => {
+      selectTab(tab);
+    });
+
+    // Append the button to the buttons container
+    buttonsContainer.appendChild(button);
+  });
+
+  // Insert the buttons container before the tab content in the DOM
+  node.insertBefore(buttonsContainer, node.firstChild);
+
+  // Initially select the first tab
+  selectTab(tabs[0]);
+}
+
+// Call the asTabs function to apply tabbed interface
+asTabs(document.querySelector("tab-panel"));
+</script>
+
+</body>
+</html>
+
